@@ -1,0 +1,84 @@
+name: Build Repo
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # 每 12 小时自动同步一次上游最新 deb
+    - cron: "0 */12 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev bzip2 jq
+
+      - name: Collect gumjs-ios-websocket deb (from gh-pages)
+        run: |
+          mkdir -p debs
+          BASE="https://rickbrian.github.io/gumjs-ios-websocket"
+          if curl -fsSL "$BASE/Packages" -o /tmp/gumjs_pkgs; then
+            grep '^Filename:' /tmp/gumjs_pkgs | awk '{print $2}' | while read -r FN; do
+              [ -n "$FN" ] || continue
+              echo "  -> $BASE/$FN"
+              curl -fsSL "$BASE/$FN" -o "debs/$(basename "$FN")" || echo "WARN: 下载失败 $FN"
+            done
+          else
+            echo "WARN: 无法访问 gumjs 源 Packages, 跳过"
+          fi
+
+      - name: Collect TrollVNC deb (rootless, latest release)
+        run: |
+          API="https://api.github.com/repos/rickbrian/TrollVNC/releases/latest"
+          curl -fsSL -H "Authorization: Bearer ${{ github.token }}" "$API" -o /tmp/tv.json || echo '{}' > /tmp/tv.json
+          # 选 rootless 方案的 arm64 .deb (排除 roothide / tipa)
+          URL=$(jq -r '[.assets[]?.browser_download_url
+                        | select(test("\\.deb$"))
+                        | select(test("rootless"))
+                        | select(test("roothide")|not)] | .[0] // empty' /tmp/tv.json)
+          if [ -z "$URL" ]; then
+            # 退而求其次: 任意 arm64 .deb
+            URL=$(jq -r '[.assets[]?.browser_download_url
+                          | select(test("\\.deb$"))
+                          | select(test("arm64"))
+                          | select(test("roothide")|not)] | .[0] // empty' /tmp/tv.json)
+          fi
+          if [ -n "$URL" ]; then
+            echo "  -> $URL"
+            curl -fsSL "$URL" -o "debs/$(basename "$URL")" || echo "WARN: TrollVNC 下载失败"
+          else
+            echo "WARN: TrollVNC 暂无 release deb, 本次跳过 (待其 CI 发布 release 后自动收录)"
+          fi
+
+      - name: Build repo index
+        run: |
+          chmod +x scripts/build_repo.sh
+          ./scripts/build_repo.sh .
+
+      - name: Show index
+        run: |
+          echo "----- Packages -----"
+          cat Packages
+          echo "----- debs -----"
+          ls -lh debs/
+
+      - name: Deploy to gh-pages
+        if: github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p /tmp/pub
+          cp -r debs Packages Packages.bz2 Packages.gz Release index.html .nojekyll /tmp/pub/ 2>/dev/null || true
+          cd /tmp/pub
+          git init -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy unified Sileo repo"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages
