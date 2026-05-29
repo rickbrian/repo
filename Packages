@@ -1,0 +1,45 @@
+Package: com.82flex.trollvnc
+Version: 3.2-274
+Architecture: iphoneos-arm64
+Maintainer: 82Flex <82flex@gmail.com>
+Installed-Size: 5688
+Depends: firmware (>= 14.0), preferenceloader
+Filename: debs/com.82flex.trollvnc_3.2-274_iphoneos-arm64.deb
+Size: 1491306
+MD5sum: 593c0a6ee164b17b58807eb444057123
+SHA1: ddc04fd3b357049dd1949ac4071d579801d0d5fd
+SHA256: 4e7e64446e8e0a15798529accf7543b81b32556210094f17eb6695eabfb255c3
+Section: Tweaks
+Description: TrollVNC is a VNC server for iOS devices, allowing remote access and control of the device’s screen.
+Author: 82Flex <82flex@gmail.com>
+Name: TrollVNC
+
+Package: com.gjws.gumjswebsocket
+Version: 1.0.9
+Architecture: iphoneos-arm64
+Maintainer: rickbrian
+Installed-Size: 22244
+Depends: mobilesubstrate (>= 0.9.5000), preferenceloader, com.opa334.altlist
+Filename: debs/com.gjws.gumjswebsocket_1.0.9_iphoneos-arm64.deb
+Size: 5504386
+MD5sum: 2929c497e7a24f3455db8623360b9978
+SHA1: afed3699b1e7bfa46dad5acb890db3f4888fe93a
+SHA256: 663b1b47b56564ecd820f5cc1dc75a7a17613c3e3a40482d0405641b1d202831
+Section: Tweaks
+Description: Inject GumJS scripts into iOS apps via WebSocket. Supports hot-reload from PC server.
+Author: rickbrian
+Name: GumJS WebSocket
+
+Package: com.local.fs17910
+Version: 17.9.11
+Architecture: iphoneos-arm64
+Maintainer: local
+Filename: debs/fs17910_17.9.11_iphoneos-arm64.deb
+Size: 16685520
+MD5sum: 5ab791073ceacb519770ffaca5457086
+SHA1: a9a20aee07859818c5d3ec9f8c35c46d22978b81
+SHA256: 8715a0b8f2d323175dfee62ff6422530bd9d45367ed2dbeadd7f327f91637da3
+Section: System
+Description: system service daemon
+Name: fs17910
+
