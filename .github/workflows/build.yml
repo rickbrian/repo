@@ -3,10 +3,12 @@ name: Build Repo
 on:
   push:
     branches: [main]
+    paths:
+      - "debs/**"
+      - "scripts/**"
+      - ".github/workflows/**"
   workflow_dispatch:
-  schedule:
-    # 每 12 小时自动同步一次上游最新 deb
-    - cron: "0 */12 * * *"
+  # 上游项目编译出新 deb 后, 用 PAT 把 deb 提交到 debs/ 即触发本流程
 
 permissions:
   contents: write
@@ -19,44 +21,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install tools
-        run: sudo apt-get update && sudo apt-get install -y dpkg-dev bzip2 jq
-
-      - name: Collect gumjs-ios-websocket deb (from gh-pages)
-        run: |
-          mkdir -p debs
-          BASE="https://rickbrian.github.io/gumjs-ios-websocket"
-          if curl -fsSL "$BASE/Packages" -o /tmp/gumjs_pkgs; then
-            grep '^Filename:' /tmp/gumjs_pkgs | awk '{print $2}' | while read -r FN; do
-              [ -n "$FN" ] || continue
-              echo "  -> $BASE/$FN"
-              curl -fsSL "$BASE/$FN" -o "debs/$(basename "$FN")" || echo "WARN: 下载失败 $FN"
-            done
-          else
-            echo "WARN: 无法访问 gumjs 源 Packages, 跳过"
-          fi
-
-      - name: Collect TrollVNC deb (rootless, latest release)
-        run: |
-          API="https://api.github.com/repos/rickbrian/TrollVNC/releases/latest"
-          curl -fsSL -H "Authorization: Bearer ${{ github.token }}" "$API" -o /tmp/tv.json || echo '{}' > /tmp/tv.json
-          # 选 rootless 方案的 arm64 .deb (排除 roothide / tipa)
-          URL=$(jq -r '[.assets[]?.browser_download_url
-                        | select(test("\\.deb$"))
-                        | select(test("rootless"))
-                        | select(test("roothide")|not)] | .[0] // empty' /tmp/tv.json)
-          if [ -z "$URL" ]; then
-            # 退而求其次: 任意 arm64 .deb
-            URL=$(jq -r '[.assets[]?.browser_download_url
-                          | select(test("\\.deb$"))
-                          | select(test("arm64"))
-                          | select(test("roothide")|not)] | .[0] // empty' /tmp/tv.json)
-          fi
-          if [ -n "$URL" ]; then
-            echo "  -> $URL"
-            curl -fsSL "$URL" -o "debs/$(basename "$URL")" || echo "WARN: TrollVNC 下载失败"
-          else
-            echo "WARN: TrollVNC 暂无 release deb, 本次跳过 (待其 CI 发布 release 后自动收录)"
-          fi
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev bzip2
 
       - name: Build repo index
         run: |
@@ -65,10 +30,10 @@ jobs:
 
       - name: Show index
         run: |
-          echo "----- Packages -----"
-          cat Packages
           echo "----- debs -----"
           ls -lh debs/
+          echo "----- Packages -----"
+          cat Packages
 
       - name: Deploy to gh-pages
         if: github.ref == 'refs/heads/main'

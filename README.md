@@ -17,17 +17,20 @@ https://rickbrian.github.io/repo/
 | GumJS WebSocket (`com.gjws.gumjswebsocket`) | Frida GumJS 脚本 WebSocket 热重载注入 | [gumjs-ios-websocket](https://github.com/rickbrian/gumjs-ios-websocket) |
 | TrollVNC | iOS 屏幕 VNC 远程控制 | [TrollVNC](https://github.com/rickbrian/TrollVNC) |
 
-## 工作方式（聚合源）
+## 工作方式（自包含源 + 上游 push）
 
-本仓库不存放源码，只做"聚合"：
+本仓库**自包含**：所有 `.deb` 直接用 git 存放在 `debs/` 目录，源稳定、不依赖 artifact 过期。
 
-- `.github/workflows/build.yml` 在每次 push、手动触发、以及每 12 小时定时运行时：
-  1. 从 [gumjs-ios-websocket gh-pages](https://rickbrian.github.io/gumjs-ios-websocket/) 拉取最新 deb；
-  2. 从 [TrollVNC 的 GitHub Release](https://github.com/rickbrian/TrollVNC/releases) 拉取最新 rootless deb；
-  3. 用 `dpkg-scanpackages` 生成 `Packages` / `Packages.bz2` / `Packages.gz` / `Release`；
-  4. 部署到 `gh-pages` 分支，由 GitHub Pages 对外提供。
+- `.github/workflows/build.yml` 在 `debs/` 有变动 / 手动触发时：
+  1. 用 `dpkg-scanpackages` 生成 `Packages` / `Packages.bz2` / `Packages.gz` / `Release`；
+  2. 动态生成首页 `index.html`（列出全部包）；
+  3. 部署到 `gh-pages` 分支，由 GitHub Pages 对外提供。
 
-新增插件：在 CI 里加一段对应的下载步骤即可。
+### 更新 deb 的两种方式
+
+- **手动**：把新版 deb 丢进 `debs/`，删掉旧版，`git push` 即可。
+- **自动（push 模式）**：上游项目（TrollVNC / gumjs）的 CI 编译完成后，用一个有本仓库写权限的 PAT，把对应 deb 提交到本仓库 `debs/`，自动触发重新发布。
+  - TrollVNC 取 `packages-rootless` artifact 里的 deb（rootless 越狱专用）。
 
 ## 注意事项
 
