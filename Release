@@ -1,0 +1,8 @@
+Origin: rickbrian repo
+Label: rickbrian
+Suite: stable
+Version: 1.0
+Codename: ios
+Architectures: iphoneos-arm iphoneos-arm64
+Components: main
+Description: rickbrian 自编译 iOS 插件统一源 (GumJS WebSocket / TrollVNC ...)

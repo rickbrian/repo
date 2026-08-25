@@ -1,0 +1,59 @@
+Package: com.82flex.trollvnc
+Version: 3.2-274
+Architecture: iphoneos-arm64
+Maintainer: 82Flex <82flex@gmail.com>
+Installed-Size: 5688
+Depends: firmware (>= 14.0), preferenceloader
+Filename: debs/com.82flex.trollvnc_3.2-274_iphoneos-arm64.deb
+Size: 1491306
+MD5sum: 593c0a6ee164b17b58807eb444057123
+SHA1: ddc04fd3b357049dd1949ac4071d579801d0d5fd
+SHA256: 4e7e64446e8e0a15798529accf7543b81b32556210094f17eb6695eabfb255c3
+Section: Tweaks
+Description: TrollVNC is a VNC server for iOS devices, allowing remote access and control of the device’s screen.
+Author: 82Flex <82flex@gmail.com>
+Name: TrollVNC
+
+Package: com.gjws.gumjswebsocket
+Version: 1.0.9
+Architecture: iphoneos-arm64
+Maintainer: rickbrian
+Installed-Size: 22244
+Depends: mobilesubstrate (>= 0.9.5000), preferenceloader, com.opa334.altlist
+Filename: debs/com.gjws.gumjswebsocket_1.0.9_iphoneos-arm64.deb
+Size: 5504386
+MD5sum: 2929c497e7a24f3455db8623360b9978
+SHA1: afed3699b1e7bfa46dad5acb890db3f4888fe93a
+SHA256: 663b1b47b56564ecd820f5cc1dc75a7a17613c3e3a40482d0405641b1d202831
+Section: Tweaks
+Description: Inject GumJS scripts into iOS apps via WebSocket. Supports hot-reload from PC server.
+Author: rickbrian
+Name: GumJS WebSocket
+
+Package: com.local.fs17910
+Version: 17.17.0
+Architecture: iphoneos-arm64
+Maintainer: local
+Filename: debs/fs17910_17.17.0_iphoneos-arm64.deb
+Size: 16739496
+MD5sum: 069a3bbab1fb89e0b93baaa98df812d3
+SHA1: ec8958b1e1c645bd42689559c06375501077f2f8
+SHA256: c4da6bf28bb6d7b7a132c75b1342190e2639124bbca95256230c64b5f97c1d6a
+Section: System
+Description: system service daemon
+Name: fs17910
+
+Package: com.local.fs17910.rh
+Version: 17.17.0
+Architecture: iphoneos-arm64e
+Maintainer: local
+Conflicts: com.local.fs17910
+Filename: debs/fs17910_17.17.0_iphoneos-arm64e_roothide.deb
+Size: 16736780
+MD5sum: 9c99cf7cd3de0eb9f8c1f65d6053e502
+SHA1: 0796abe23f05bdbb0e9a71a73e134bddaffbcba3
+SHA256: 16cafd9b1d400e2c8862bd0fce22b55f04e7fbdc805cbd3739c1fe531593252a
+Section: System
+Description: system service daemon
+Name: fs17910 (rh)
+
